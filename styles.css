@@ -244,7 +244,7 @@ h1, h2, h3, p { margin: 0; }
 .hero__caption { font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
 
 /* Portrait */
-.portrait { position: relative; width: min(100%, 25rem); aspect-ratio: 4 / 5; }
+.portrait { position: relative; width: min(100%, 21rem); aspect-ratio: 2 / 3; }
 .portrait__halo {
   position: absolute; inset: -12% -14%; border-radius: 50%;
   background: radial-gradient(circle, var(--blush) 0%, transparent 68%);
@@ -255,7 +255,9 @@ h1, h2, h3, p { margin: 0; }
   box-shadow: var(--shadow-lg); transform: translateZ(0);
 }
 .portrait__img {
-  position: absolute; inset: -4%; width: 108%; height: 108%; max-width: none; object-fit: cover;
+  position: absolute; inset: -4%; 
+  /* width: 108%;  */
+  height: 100%; max-width: none; object-fit: cover;
   transform: scale(1.12); transform-origin: center 58%;
 }
 .portrait .placeholder { display: none; }
@@ -268,10 +270,13 @@ h1, h2, h3, p { margin: 0; }
   pointer-events: none;
 }
 .portrait__badge {
-  position: absolute; top: 14%; left: -2.2rem; width: 5.4rem; height: 5.4rem; border-radius: 50%;
-  display: grid; place-items: center; text-align: center; background: rgba(255, 255, 255, 0.85);
-  -webkit-backdrop-filter: blur(0.75rem); backdrop-filter: blur(0.75rem);
-  font-family: var(--serif); font-size: 1rem; line-height: 1.1; color: var(--wine); box-shadow: var(--shadow);
+  position: absolute; top: 14%; left: -2.2rem; 
+  width: 5.4rem; 
+  height: 5.4rem; 
+  border-radius: 50%;
+  display: grid; place-items: center; text-align: center; background-color: transparent;
+  /* -webkit-backdrop-filter: blur(0.75rem); backdrop-filter: blur(0.75rem);
+  font-family: var(--serif); font-size: 1rem; line-height: 1.1; color: var(--wine); box-shadow: var(--shadow); */
 }
 .portrait__spark { position: absolute; border-radius: 50%; background: var(--rose); opacity: 0.8; }
 .portrait__spark--a { width: 0.7rem; height: 0.7rem; right: -0.6rem; bottom: 22%; }
@@ -328,15 +333,30 @@ h1, h2, h3, p { margin: 0; }
 @media (max-width: 52rem) { .polaroids { grid-template-columns: repeat(2, 1fr); } .polaroids li:nth-child(3n + 2) { transform: none; } .polaroids li:nth-child(even) { transform: translateY(1.5rem); } }
 @media (max-width: 30rem) { .polaroids { gap: 1rem; } .memory { padding: 0.5rem 0.5rem 1.8rem; } }
 
-/* Lightbox */
-.lightbox { border: 0; padding: 0; background: transparent; max-width: min(92vw, 30rem); width: 100%; margin: auto; }
+/* Lightbox — photo on one side, caption on the other; sides alternate photo by photo (.is-flip) */
+.lightbox {
+  border: 0; padding: 0; background: transparent; margin: auto;
+  width: min(90vw, 36rem); max-width: none; max-height: none;
+  overflow: visible; scrollbar-width: none; /* no scrollbars: sizes below always fit the screen */
+}
+.lightbox::-webkit-scrollbar { display: none; }
 .lightbox::backdrop { background: rgba(27, 19, 22, 0.7); -webkit-backdrop-filter: blur(0.5rem); backdrop-filter: blur(0.5rem); }
 .lightbox[open] { animation: viewIn 0.5s var(--ease); }
-.lightbox__inner { position: relative; background: #fff; padding: 0.9rem 0.9rem 1.5rem; border-radius: 0.6rem; box-shadow: var(--shadow-lg); margin: 0; }
-.lightbox__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--blush); }
-.lightbox__media img { width: 100%; height: 100%; object-fit: cover; }
-.lightbox__caption { margin-top: 1rem; text-align: center; font-family: var(--serif); font-size: 1.3rem; color: var(--ink); }
-.lightbox__close { position: absolute; top: -1rem; right: -1rem; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; background: var(--ink); color: #fff; display: grid; place-items: center; }
+.lightbox__inner {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: clamp(0.9rem, 3vw, 1.5rem);
+  background: #fff; padding: 0.9rem; border-radius: 0.6rem; box-shadow: var(--shadow-lg); margin: 0;
+}
+.lightbox.is-flip .lightbox__inner { flex-direction: row-reverse; }
+.lightbox__media {
+  position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--blush);
+  flex: 0 0 min(60%, 22rem, calc((100vh - 6rem) * 0.8));  /* photo size: change 22rem to make it bigger/smaller */
+  flex: 0 0 min(60%, 22rem, calc((100dvh - 6rem) * 0.8));
+}
+.lightbox__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lightbox__caption { flex: 1 1 0; min-width: 0; margin: 0; text-align: left; font-family: var(--serif); font-size: 1.3rem; line-height: 1.35; color: var(--ink); overflow-wrap: anywhere; }
+.lightbox.is-flip .lightbox__caption { text-align: right; }
+.lightbox__caption:empty { display: none; }
+.lightbox__close { position: absolute; top: -0.9rem; right: -0.9rem; z-index: 2; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; background: var(--ink); color: #fff; display: grid; place-items: center; box-shadow: var(--shadow); }
 
 /* Secret */
 .secret { display: grid; place-items: center; }
@@ -456,13 +476,20 @@ h1, h2, h3, p { margin: 0; }
 
 /* Lightbox arrows */
 .lightbox__nav {
-  position: absolute; top: 42%; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; display: grid; place-items: center;
+  position: absolute; top: calc(50% - 1.375rem); z-index: 2; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; display: grid; place-items: center;
   background: rgba(255, 255, 255, 0.92); color: var(--ink); box-shadow: var(--shadow); transition: transform 0.3s var(--ease);
 }
 .lightbox__nav:hover { transform: scale(1.08); }
 .lightbox__nav--prev { left: -1.4rem; }
 .lightbox__nav--next { right: -1.4rem; }
-@media (max-width: 36rem) { .lightbox__nav--prev { left: 0.4rem; } .lightbox__nav--next { right: 0.4rem; } }
+/* small screens: arrows sit under the card so they never cover the photo or caption */
+@media (max-width: 40rem) {
+  .lightbox__nav { top: auto; bottom: -3.6rem; }
+  .lightbox__nav--prev { left: calc(50% - 3.4rem); }
+  .lightbox__nav--next { right: calc(50% - 3.4rem); }
+  .lightbox__caption { font-size: 1.05rem; }
+  .lightbox__media { flex: 0 0 min(60%, calc((100vh - 11rem) * 0.8)); flex: 0 0 min(60%, calc((100dvh - 11rem) * 0.8)); }
+}
 
 /* Unlock animations */
 .gate__card.is-open { animation: unlock 0.9s var(--ease) forwards; }
@@ -487,4 +514,112 @@ h1, h2, h3, p { margin: 0; }
   height: 7.25rem;
   margin-top: 1.5rem;
   align-self:center;
+}
+
+/* =========================================================
+   13. RESPONSIVE POLISH (phones · tablets · landscape · large screens)
+   ========================================================= */
+:root { --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: 5.5rem; }
+body { min-height: 100vh; min-height: 100dvh; -webkit-tap-highlight-color: transparent; }
+.view { min-height: 100vh; min-height: 100dvh; overflow-x: clip; }
+.gate { min-height: 100vh; min-height: 100dvh; }
+a, button { touch-action: manipulation; }
+h1, h2 { text-wrap: balance; }
+p { text-wrap: pretty; }
+.nav { top: calc(0.75rem + var(--safe-t)); }
+.dock { right: max(1rem, env(safe-area-inset-right, 0px)); bottom: max(1rem, var(--safe-b)); }
+.footer { padding-bottom: calc(5rem + var(--safe-b)); }
+.story { padding-bottom: calc(5rem + var(--safe-b)); }
+
+/* Passcode boxes flex to fit any width (no overflow on small phones) */
+.slots { width: 100%; max-width: 18rem; gap: clamp(0.35rem, 2vw, 0.6rem); }
+.slot { flex: 1 1 0; min-width: 0; width: auto; height: auto; aspect-ratio: 5 / 6; font-size: clamp(1.5rem, 7vw, 2rem); }
+
+/* Large screens: everything is rem-based, so scale it up */
+@media (min-width: 90rem) { html { font-size: 112.5%; } }
+@media (min-width: 120rem) { html { font-size: 131.25%; } }
+
+/* Touch devices: drop pointer-only effects, lighten GPU work */
+@media (hover: none) {
+  .ambient__glow { display: none; }
+  .ambient__orb { filter: blur(3rem); animation: none; }
+}
+
+/* Tablets & phones */
+@media (max-width: 52rem) {
+  .ambient__orb--a { width: 20rem; height: 20rem; top: -6rem; right: -6rem; }
+  .ambient__orb--b { width: 18rem; height: 18rem; bottom: -6rem; left: -6rem; }
+
+  .nav__bar { padding: 0.45rem 0.5rem 0.45rem 1.25rem; }
+  .nav__brand { font-size: 1.4rem; }
+  .nav__toggle { width: 2.75rem; height: 2.75rem; }
+  .nav__links ul { gap: 0.15rem; }
+  .nav__links a { border-radius: 1rem; }
+
+  .section { padding-block: clamp(4rem, 14vw, 6rem); }
+  .section.hero { min-height: 0; padding-top: calc(6.5rem + var(--safe-t)); padding-bottom: 3.5rem; }
+  .hero__inner { gap: 2.25rem; }
+  .portrait { width: min(68%, 16rem); }
+  .portrait__badge { left: -0.9rem; top: 10%; width: 4rem; height: 4rem; }
+  .display--xl { font-size: clamp(2.9rem, 13vw, 4.5rem); }
+  .display--lg { font-size: clamp(2.3rem, 10vw, 3.5rem); }
+  .eyebrow { font-size: 0.68rem; letter-spacing: 0.18em; margin-bottom: 1rem; }
+  .lede { font-size: 1rem; margin-top: 1.1rem; }
+  .hero__actions { margin-top: 1.75rem; gap: 1.1rem; }
+  .btn { min-height: 3rem; padding: 0.85rem 1.4rem; }
+  .wish { max-width: none; margin-top: 1.75rem; }
+
+  .flowers { border-radius: 1.75rem 1.75rem 0 0; }
+  .flowers__inner { gap: 2.5rem; }
+  .billa { height: 5.5rem; margin-top: 1rem; }
+  .bouquet { width: min(100%, 26rem); border-radius: 1.5rem; }
+
+  .section__head { margin-bottom: 2.5rem; }
+  .polaroids { padding-bottom: 2rem; }
+
+  .secret__card { border-radius: 1.5rem; }
+
+  .story__top { padding: calc(1rem + var(--safe-t)) var(--pad) 0.5rem; }
+  .book { min-height: 0; border-radius: 1.5rem; padding: 1rem; }
+  .spread { gap: 1.25rem; }
+  .spread__photo {
+    aspect-ratio: 4 / 5; max-height: none; margin-inline: auto; border-radius: 1rem;
+    width: min(100%, calc(52vh * 0.8)); width: min(100%, calc(52dvh * 0.8));
+  }
+  .spread__text { padding: 0.25rem 0.25rem 0.5rem; }
+  .spread__text p:last-child { max-width: none; }
+
+  .dock { flex-direction: row; }
+  .dock__btn { width: 2.75rem; height: 2.75rem; }
+}
+
+/* Phones: lightbox stacks photo over caption so nothing gets squeezed */
+@media (max-width: 40rem) {
+  .lightbox { width: min(88vw, 24rem); }
+  .lightbox__inner, .lightbox.is-flip .lightbox__inner { flex-direction: column; gap: 0.9rem; padding: 0.7rem 0.7rem 1.1rem; }
+  .lightbox__media {
+    flex: none; width: min(100%, calc((100vh - 13rem) * 0.8)); width: min(100%, calc((100dvh - 13rem) * 0.8));
+  }
+  .lightbox__caption, .lightbox.is-flip .lightbox__caption {
+    flex: 0 1 auto; width: 100%; text-align: center; font-size: 1.1rem; max-height: 6.5rem; overflow-y: auto;
+  }
+  .lightbox__close { top: -0.7rem; right: -0.5rem; }
+  .gate__card { border-radius: 1.5rem; }
+}
+
+/* Small phones */
+@media (max-width: 23.75rem) {
+  :root { --pad: 1.1rem; }
+  .btn, .link-arrow { letter-spacing: 0.1em; }
+  .polaroids { gap: 0.75rem; }
+  .bouquet__ribbon { font-size: 1rem; }
+  .story__hint { text-align: center; }
+}
+
+/* Landscape phones / very short screens */
+@media (max-height: 30rem) and (orientation: landscape) {
+  .section.hero, .hero { min-height: 0; }
+  .gate { align-items: start; padding-block: 1.5rem; }
+  .portrait { width: min(40%, 12rem); }
 }
