@@ -623,3 +623,10 @@ p { text-wrap: pretty; }
   .gate { align-items: start; padding-block: 1.5rem; }
   .portrait { width: min(40%, 12rem); }
 }
+
+/* ---- Butterfly badge: always visible, on top, never clipped (phones) ---- */
+.portrait__badge { z-index: 5; overflow: visible; }
+.portrait__badge img { width: 100%; height: 100%; max-width: none; object-fit: contain; display: block; }
+@media (max-width: 52rem) {
+  .portrait__badge { left: 0.4rem; top: 6%; width: 4.25rem; height: 4.25rem; }
+}
