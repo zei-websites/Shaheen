@@ -695,6 +695,8 @@
       lbMedia.innerHTML = '<span class="placeholder"><span>Photo area</span></span>';
     }
     lbCaption.textContent = card.dataset.caption || "";
+    // alternate: photo 1 → caption on the right, photo 2 → caption on the left, and so on
+    lightbox.classList.toggle("is-flip", lbIndex % 2 === 1);
   }
   memCards.forEach((card) => card.addEventListener("click", () => {
     if (card.dataset.justDragged === "1") return; // a drag is not a click
